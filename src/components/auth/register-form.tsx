@@ -6,10 +6,16 @@ import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "../ui/card";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import { Button } from "../ui/button";
 
 export default function RegisterForm() {
   const router = useRouter();
@@ -87,7 +93,7 @@ export default function RegisterForm() {
             <Label htmlFor="name">Full name</Label>
             <Input
               id="name"
-              placeholder="Enter your full name"
+              placeholder="Kesar Karale"
               value={formData.name}
               onChange={(e) => onChange("name", e.target.value)}
             />
@@ -98,7 +104,7 @@ export default function RegisterForm() {
             <Input
               id="email"
               type="email"
-              placeholder="Enter your email"
+              placeholder="you@example.com"
               value={formData.email}
               onChange={(e) => onChange("email", e.target.value)}
             />
@@ -109,7 +115,7 @@ export default function RegisterForm() {
             <Input
               id="password"
               type="password"
-              placeholder="Create a password"
+              placeholder="Minimum 6 characters"
               value={formData.password}
               onChange={(e) => onChange("password", e.target.value)}
             />
@@ -118,7 +124,7 @@ export default function RegisterForm() {
           <Button type="submit" className="w-full" disabled={isLoading}>
             {isLoading ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Loader2 className="mr-2 size-4 animate-spin" />
                 Creating account...
               </>
             ) : (
@@ -128,7 +134,10 @@ export default function RegisterForm() {
 
           <p className="text-center text-sm text-slate-600">
             Already have an account?{" "}
-            <Link href="/login" className="font-medium text-slate-900 hover:underline">
+            <Link
+              href="/login"
+              className="font-medium text-slate-900 hover:underline"
+            >
               Sign in
             </Link>
           </p>
