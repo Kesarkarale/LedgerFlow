@@ -4,13 +4,19 @@ import { useState } from "react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Loader2, LockKeyhole, Mail } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
-import AuthShell from "@/components/auth/auth-shell";
-import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -22,14 +28,14 @@ export default function LoginForm() {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const onChange = (key: "email" | "password", value: string) => {
+  const onChange = (key: string, value: string) => {
     setFormData((prev) => ({
       ...prev,
       [key]: value,
     }));
   };
 
-  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!formData.email || !formData.password) {
@@ -46,16 +52,29 @@ export default function LoginForm() {
         redirect: false,
       });
 
-      if (res?.error) {
+      console.log("SIGNIN RES:", res);
+
+      if (!res) {
+        toast.error("No response from server");
+        return;
+      }
+
+      if (res.error) {
         toast.error("Invalid email or password");
         return;
       }
 
-      toast.success("Login successful");
-      router.push("/dashboard");
-      router.refresh();
+      if (res.ok) {
+        toast.success("Login successful");
+
+        // hard redirect
+        window.location.href = "/dashboard";
+        return;
+      }
+
+      toast.error("Login failed");
     } catch (error) {
-      console.error(error);
+      console.error("LOGIN ERROR:", error);
       toast.error("Something went wrong while logging in");
     } finally {
       setIsLoading(false);
@@ -63,61 +82,50 @@ export default function LoginForm() {
   };
 
   return (
-    <AuthShell
-      title="Welcome back"
-      subtitle="Sign in to access your LedgerFlow workspace, manage business accounts and continue your ERP operations."
-      footerText="Don’t have an account?"
-      footerLinkText="Create one"
-      footerHref="/register"
-      form={
+    <Card className="w-full max-w-md border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl">
+      <CardHeader className="space-y-2">
+        <CardTitle className="text-2xl font-bold tracking-tight text-white">
+          Welcome back to LedgerFlow
+        </CardTitle>
+        <CardDescription className="text-slate-300">
+          Sign in to continue managing your ERP workspace.
+        </CardDescription>
+      </CardHeader>
+
+      <CardContent>
         <form onSubmit={onSubmit} className="space-y-5">
           <div className="space-y-2">
             <Label htmlFor="email" className="text-slate-200">
               Email address
             </Label>
-            <div className="relative">
-              <Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-              <Input
-                id="email"
-                type="email"
-                placeholder="you@company.com"
-                value={formData.email}
-                onChange={(e) => onChange("email", e.target.value)}
-                className="h-12 rounded-xl border-white/10 bg-white/5 pl-11 text-white placeholder:text-slate-500 focus-visible:border-blue-400/50 focus-visible:ring-2 focus-visible:ring-blue-500/20"
-              />
-            </div>
+            <Input
+              id="email"
+              type="email"
+              placeholder="you@example.com"
+              value={formData.email}
+              onChange={(e) => onChange("email", e.target.value)}
+              className="bg-white/5 border-white/10 text-white placeholder:text-slate-400"
+            />
           </div>
 
           <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="password" className="text-slate-200">
-                Password
-              </Label>
-              <Link
-                href="#"
-                className="text-xs font-medium text-blue-400 transition hover:text-blue-300"
-              >
-                Forgot password?
-              </Link>
-            </div>
-
-            <div className="relative">
-              <LockKeyhole className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-              <Input
-                id="password"
-                type="password"
-                placeholder="Enter your password"
-                value={formData.password}
-                onChange={(e) => onChange("password", e.target.value)}
-                className="h-12 rounded-xl border-white/10 bg-white/5 pl-11 text-white placeholder:text-slate-500 focus-visible:border-blue-400/50 focus-visible:ring-2 focus-visible:ring-blue-500/20"
-              />
-            </div>
+            <Label htmlFor="password" className="text-slate-200">
+              Password
+            </Label>
+            <Input
+              id="password"
+              type="password"
+              placeholder="••••••••"
+              value={formData.password}
+              onChange={(e) => onChange("password", e.target.value)}
+              className="bg-white/5 border-white/10 text-white placeholder:text-slate-400"
+            />
           </div>
 
           <Button
             type="submit"
+            className="w-full"
             disabled={isLoading}
-            className="h-12 w-full rounded-xl bg-gradient-to-r from-blue-600 to-violet-600 text-base font-semibold text-white shadow-lg shadow-blue-950/30 transition hover:from-blue-500 hover:to-violet-500"
           >
             {isLoading ? (
               <>
@@ -125,17 +133,18 @@ export default function LoginForm() {
                 Signing in...
               </>
             ) : (
-              "Sign in to LedgerFlow"
+              "Sign in"
             )}
           </Button>
 
-          <p className="text-center text-xs leading-6 text-slate-400">
-            By continuing, you agree to LedgerFlow’s{" "}
-            <span className="text-slate-300">Terms of Service</span> and{" "}
-            <span className="text-slate-300">Privacy Policy</span>.
+          <p className="text-sm text-slate-300">
+            Don&apos;t have an account?{" "}
+            <Link href="/register" className="font-medium text-white underline">
+              Create one
+            </Link>
           </p>
         </form>
-      }
-    />
+      </CardContent>
+    </Card>
   );
 }
