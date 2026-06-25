@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-
-import AuthSessionProvider from "@/components/providers/session-provider";
 import { Toaster } from "sonner";
+import AuthSessionProvider from "@/components/providers/session-provider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -11,7 +10,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: "LedgerFlow",
-  description: "Professional ERP for accounting, inventory, vouchers and business management.",
+  description: "Smart ERP for billing, accounting and inventory",
 };
 
 export default function RootLayout({
@@ -21,11 +20,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        <AuthSessionProvider>
-          {children}
-          <Toaster richColors position="top-right" />
-        </AuthSessionProvider>
+      <body className={`${inter.className} bg-slate-950 text-white antialiased`}>
+        <AuthSessionProvider>{children}</AuthSessionProvider>
+        <Toaster richColors position="top-right" />
       </body>
     </html>
   );
