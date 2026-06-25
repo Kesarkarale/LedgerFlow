@@ -4,19 +4,13 @@ import { useState } from "react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
+import { Loader2, LockKeyhole, Mail } from "lucide-react";
 import { toast } from "sonner";
 
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "../ui/card";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
-import { Button } from "../ui/button";
+import AuthShell from "@/components/auth/auth-shell";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -28,14 +22,14 @@ export default function LoginForm() {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const onChange = (key: string, value: string) => {
+  const onChange = (key: "email" | "password", value: string) => {
     setFormData((prev) => ({
       ...prev,
       [key]: value,
     }));
   };
 
-  const onSubmit = async (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!formData.email || !formData.password) {
@@ -69,62 +63,79 @@ export default function LoginForm() {
   };
 
   return (
-    <Card className="w-full max-w-md border-slate-200 shadow-xl">
-      <CardHeader className="space-y-2">
-        <CardTitle className="text-2xl font-bold tracking-tight">
-          Welcome back to LedgerFlow
-        </CardTitle>
-        <CardDescription>
-          Sign in to continue managing your ERP workspace.
-        </CardDescription>
-      </CardHeader>
-
-      <CardContent>
+    <AuthShell
+      title="Welcome back"
+      subtitle="Sign in to access your LedgerFlow workspace, manage business accounts and continue your ERP operations."
+      footerText="Don’t have an account?"
+      footerLinkText="Create one"
+      footerHref="/register"
+      form={
         <form onSubmit={onSubmit} className="space-y-5">
           <div className="space-y-2">
-            <Label htmlFor="email">Email address</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="you@example.com"
-              value={formData.email}
-              onChange={(e) => onChange("email", e.target.value)}
-            />
+            <Label htmlFor="email" className="text-slate-200">
+              Email address
+            </Label>
+            <div className="relative">
+              <Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <Input
+                id="email"
+                type="email"
+                placeholder="you@company.com"
+                value={formData.email}
+                onChange={(e) => onChange("email", e.target.value)}
+                className="h-12 rounded-xl border-white/10 bg-white/5 pl-11 text-white placeholder:text-slate-500 focus-visible:border-blue-400/50 focus-visible:ring-2 focus-visible:ring-blue-500/20"
+              />
+            </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              placeholder="Enter password"
-              value={formData.password}
-              onChange={(e) => onChange("password", e.target.value)}
-            />
+            <div className="flex items-center justify-between">
+              <Label htmlFor="password" className="text-slate-200">
+                Password
+              </Label>
+              <Link
+                href="#"
+                className="text-xs font-medium text-blue-400 transition hover:text-blue-300"
+              >
+                Forgot password?
+              </Link>
+            </div>
+
+            <div className="relative">
+              <LockKeyhole className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <Input
+                id="password"
+                type="password"
+                placeholder="Enter your password"
+                value={formData.password}
+                onChange={(e) => onChange("password", e.target.value)}
+                className="h-12 rounded-xl border-white/10 bg-white/5 pl-11 text-white placeholder:text-slate-500 focus-visible:border-blue-400/50 focus-visible:ring-2 focus-visible:ring-blue-500/20"
+              />
+            </div>
           </div>
 
-          <Button type="submit" className="w-full" disabled={isLoading}>
+          <Button
+            type="submit"
+            disabled={isLoading}
+            className="h-12 w-full rounded-xl bg-gradient-to-r from-blue-600 to-violet-600 text-base font-semibold text-white shadow-lg shadow-blue-950/30 transition hover:from-blue-500 hover:to-violet-500"
+          >
             {isLoading ? (
               <>
-                <Loader2 className="mr-2 size-4 animate-spin" />
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Signing in...
               </>
             ) : (
-              "Sign in"
+              "Sign in to LedgerFlow"
             )}
           </Button>
 
-          <p className="text-center text-sm text-slate-600">
-            Don&apos;t have an account?{" "}
-            <Link
-              href="/register"
-              className="font-medium text-slate-900 hover:underline"
-            >
-              Create one
-            </Link>
+          <p className="text-center text-xs leading-6 text-slate-400">
+            By continuing, you agree to LedgerFlow’s{" "}
+            <span className="text-slate-300">Terms of Service</span> and{" "}
+            <span className="text-slate-300">Privacy Policy</span>.
           </p>
         </form>
-      </CardContent>
-    </Card>
+      }
+    />
   );
 }
