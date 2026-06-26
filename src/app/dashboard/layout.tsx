@@ -9,7 +9,7 @@ export default function DashboardLayout({
 }) {
   return (
     <div className="flex min-h-screen bg-slate-950 text-white">
-      <Sidebar />
+      <AppSidebar />
 
       <div className="flex flex-1 flex-col">
         <Topbar />
