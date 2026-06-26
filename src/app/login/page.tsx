@@ -30,33 +30,39 @@ export default function LoginPage() {
   };
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (!formData.email || !formData.password) {
-      toast.error("Please enter email and password");
+  if (!formData.email || !formData.password) {
+    toast.error("Please enter email and password");
+    return;
+  }
+
+  try {
+    setIsLoading(true);
+
+    const res = await signIn("credentials", {
+      email: formData.email,
+      password: formData.password,
+      redirect: false,
+    });
+
+    console.log("SIGNIN RESPONSE =>", res);
+
+    if (res?.error) {
+      toast.error("Invalid email or password");
       return;
     }
 
-    try {
-      setIsLoading(true);
+    toast.success("Login successful");
 
-      const res = await signIn("credentials", {
-        email: formData.email,
-        password: formData.password,
-        redirect: false,
-      });
-
-      console.log("SIGNIN RESPONSE =>", res);
-
-      if (res?.error) {
-        toast.error("Invalid email or password");
-        return;
-      }
-
-      toast.success("Login successful");
-
-window.location.href = "/dashboard";
-  };
+    window.location.href = "/dashboard";
+  } catch (error) {
+    console.error(error);
+    toast.error("Something went wrong");
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   return (
     <main className="min-h-screen bg-slate-950 text-white">
