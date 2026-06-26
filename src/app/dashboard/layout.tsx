@@ -1,23 +1,17 @@
-import type { ReactNode } from "react";
 import AppSidebar from "@/components/dashboard/app-sidebar";
-import Topbar from "@/components/dashboard/topbar";
 
 export default function DashboardLayout({
   children,
 }: {
-  children: ReactNode;
+  children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen bg-slate-950 text-white">
+    <div className="flex min-h-screen bg-[#020617]">
       <AppSidebar />
 
-      <div className="flex flex-1 flex-col">
-        <Topbar />
-
-        <main className="flex-1 overflow-auto p-8">
-          {children}
-        </main>
-      </div>
+      <main className="flex-1 overflow-y-auto">
+        {children}
+      </main>
     </div>
   );
 }
