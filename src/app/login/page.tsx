@@ -54,14 +54,8 @@ export default function LoginPage() {
       }
 
       toast.success("Login successful");
-      router.push("/dashboard");
-      router.refresh();
-    } catch (error) {
-      console.error(error);
-      toast.error("Something went wrong while logging in");
-    } finally {
-      setIsLoading(false);
-    }
+
+window.location.href = "/dashboard";
   };
 
   return (
