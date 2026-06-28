@@ -4,9 +4,9 @@ import { useMemo, useState } from "react";
 import {
   BookOpen,
   Plus,
+  Search,
   Pencil,
   Trash2,
-  Search,
   Save,
   Printer,
   Download,
@@ -21,78 +21,82 @@ type Ledger = {
   name: string;
   group: string;
   mobile: string;
+  email: string;
   gst: string;
-  balance: number;
+  pan: string;
   address: string;
+  city: string;
+  state: string;
+  pincode: string;
+  openingBalance: number;
 };
 
-const groups = [
+const ledgerGroups = [
   "Sundry Debtors",
   "Sundry Creditors",
-  "Cash-in-Hand",
   "Bank Accounts",
-  "Direct Expenses",
-  "Indirect Expenses",
+  "Cash In Hand",
   "Sales Account",
   "Purchase Account",
+  "Indirect Expense",
+  "Direct Expense",
 ];
 
 export default function LedgerPage() {
-
   const [search, setSearch] = useState("");
 
-  const [ledgerName, setLedgerName] =
-    useState("");
+  const [ledgerName, setLedgerName] = useState("");
+  const [group, setGroup] = useState("Sundry Debtors");
+  const [mobile, setMobile] = useState("");
+  const [email, setEmail] = useState("");
+  const [gst, setGst] = useState("");
+  const [pan, setPan] = useState("");
+  const [address, setAddress] = useState("");
+  const [city, setCity] = useState("");
+  const [stateName, setStateName] = useState("");
+  const [pincode, setPincode] = useState("");
+  const [openingBalance, setOpeningBalance] = useState(0);
 
-  const [group, setGroup] =
-    useState(groups[0]);
+  const [ledgers, setLedgers] = useState<Ledger[]>([
+    {
+      id: 1,
+      name: "ABC Traders",
+      group: "Sundry Debtors",
+      mobile: "9876543210",
+      email: "abc@gmail.com",
+      gst: "27ABCDE1234F1Z5",
+      pan: "ABCDE1234F",
+      address: "Shivaji Nagar",
+      city: "Pune",
+      state: "Maharashtra",
+      pincode: "411005",
+      openingBalance: 25000,
+    },
+    {
+      id: 2,
+      name: "XYZ Suppliers",
+      group: "Sundry Creditors",
+      mobile: "9988776655",
+      email: "xyz@gmail.com",
+      gst: "27PQRSX4567A1Z2",
+      pan: "PQRSX4567A",
+      address: "Andheri",
+      city: "Mumbai",
+      state: "Maharashtra",
+      pincode: "400053",
+      openingBalance: 18000,
+    },
+  ]);
 
-  const [mobile, setMobile] =
-    useState("");
-
-  const [gst, setGst] =
-    useState("");
-
-  const [balance, setBalance] =
-    useState(0);
-
-  const [address, setAddress] =
-    useState("");
-
-  const [ledgers, setLedgers] =
-    useState<Ledger[]>([
-      {
-        id: 1,
-        name: "ABC Traders",
-        group: "Sundry Debtors",
-        mobile: "9876543210",
-        gst: "27ABCDE1234F1Z5",
-        balance: 25000,
-        address: "Pune",
-      },
-      {
-        id: 2,
-        name: "XYZ Suppliers",
-        group: "Sundry Creditors",
-        mobile: "9988776655",
-        gst: "27PQRSX4567A1Z2",
-        balance: 18000,
-        address: "Mumbai",
-      },
-    ]);
-
-  const filtered = useMemo(() => {
-
-    return ledgers.filter((item) =>
-      item.name
-        .toLowerCase()
-        .includes(search.toLowerCase())
+  const filteredLedgers = useMemo(() => {
+    return ledgers.filter(
+      (item) =>
+        item.name.toLowerCase().includes(search.toLowerCase()) ||
+        item.group.toLowerCase().includes(search.toLowerCase())
     );
-
-  }, [search, ledgers]);
+  }, [ledgers, search]);
 
   const addLedger = () => {
-
     if (!ledgerName) return;
 
     setLedgers((prev) => [
@@ -102,411 +106,377 @@ export default function LedgerPage() {
         name: ledgerName,
         group,
         mobile,
+        email,
         gst,
-        balance,
+        pan,
         address,
+        city,
+        state: stateName,
+        pincode,
+        openingBalance,
       },
     ]);
 
     setLedgerName("");
+    setGroup("Sundry Debtors");
     setMobile("");
+    setEmail("");
     setGst("");
-    setBalance(0);
+    setPan("");
     setAddress("");
-
+    setCity("");
+    setStateName("");
+    setPincode("");
+    setOpeningBalance(0);
   };
 
-  const deleteLedger = (id:number)=>{
-
-    setLedgers((prev)=>
-      prev.filter((x)=>x.id!==id)
-    );
-
+  const deleteLedger = (id: number) => {
+    setLedgers((prev) => prev.filter((x) => x.id !== id));
   };
 
   return (
+    <div className="space-y-8">
 
-<div className="space-y-8">
+      {/* Header */}
 
-<div className="flex items-center justify-between">
+      <div className="flex items-center justify-between">
 
-<div>
+        <div>
 
-<h1 className="flex items-center gap-3 text-3xl font-bold">
+          <h1 className="flex items-center gap-3 text-3xl font-bold">
 
-<BookOpen className="text-blue-600"/>
+            <BookOpen className="h-8 w-8 text-blue-600" />
 
-Ledger Master
+            Ledger Master
 
-</h1>
+          </h1>
 
-<p className="mt-2 text-slate-500">
+          <p className="mt-2 text-slate-500">
 
-Manage all business ledgers.
+            Create and manage business ledgers.
 
-</p>
+          </p>
 
-</div>
+        </div>
 
-<Button
-onClick={addLedger}
-className="bg-blue-600 hover:bg-blue-700"
->
+        <div className="flex gap-3">
 
-<Plus className="mr-2 h-4 w-4"/>
+          <Button variant="outline">
 
-Create Ledger
+            <Printer className="mr-2 h-4 w-4" />
 
-</Button>
+            Print
 
-</div>
+          </Button>
 
-<div className="grid gap-6 lg:grid-cols-3">
+          <Button variant="outline">
 
-<Card className="p-6">
+            <Download className="mr-2 h-4 w-4" />
 
-<h2 className="mb-5 text-xl font-semibold">
+            Export
 
-Create Ledger
+          </Button>
 
-</h2>
+          <Button
+            onClick={addLedger}
+            className="bg-blue-600 hover:bg-blue-700"
+          >
 
-<div className="space-y-4">
+            <Plus className="mr-2 h-4 w-4" />
 
-<Input
-placeholder="Ledger Name"
-value={ledgerName}
-onChange={(e)=>
-setLedgerName(e.target.value)
-}
-/>
+            New Ledger
 
-<select
-value={group}
-onChange={(e)=>
-setGroup(e.target.value)
-}
-className="w-full rounded-lg border p-3"
->
+          </Button>
 
-{groups.map((g)=>(
+        </div>
 
-<option
-key={g}
-value={g}
->
+      </div>
 
-{g}
+      {/* Statistics */}
 
-</option>
+      <div className="grid gap-5 md:grid-cols-4">
 
-))}
+        <Card className="p-5">
+          <p className="text-sm text-slate-500">Total Ledgers</p>
+          <h2 className="mt-3 text-3xl font-bold">
+            {ledgers.length}
+          </h2>
+        </Card>
 
-</select>
+        <Card className="p-5">
+          <p className="text-sm text-slate-500">Total Balance</p>
+          <h2 className="mt-3 text-3xl font-bold text-green-600">
+            ₹
+            {ledgers
+              .reduce((sum, item) => sum + item.openingBalance, 0)
+              .toLocaleString()}
+          </h2>
+        </Card>
 
-<Input
-placeholder="Mobile Number"
-value={mobile}
-onChange={(e)=>
-setMobile(e.target.value)
-}
-/>
+        <Card className="p-5">
+          <p className="text-sm text-slate-500">Debtors</p>
+          <h2 className="mt-3 text-3xl font-bold text-blue-600">
+            {
+              ledgers.filter(
+                (x) => x.group === "Sundry Debtors"
+              ).length
+            }
+          </h2>
+        </Card>
 
-<Input
-placeholder="GST Number"
-value={gst}
-onChange={(e)=>
-setGst(e.target.value)
-}
-/>
+        <Card className="p-5">
+          <p className="text-sm text-slate-500">Creditors</p>
+          <h2 className="mt-3 text-3xl font-bold text-red-600">
+            {
+              ledgers.filter(
+                (x) => x.group === "Sundry Creditors"
+              ).length
+            }
+          </h2>
+        </Card>
 
-<Input
-type="number"
-placeholder="Opening Balance"
-value={balance}
-onChange={(e)=>
-setBalance(Number(e.target.value))
-}
-/>
-
-<textarea
-rows={4}
-placeholder="Address"
-value={address}
-onChange={(e)=>
-setAddress(e.target.value)
-}
-className="w-full rounded-lg border p-3"
-/>
-
-<Button
-onClick={addLedger}
-className="w-full"
->
-
-<Save className="mr-2 h-4 w-4"/>
-
-Save Ledger
-
-</Button>
-
-</div>
-
-</Card>
-  "use client";
-
-import { useMemo, useState } from "react";
-import {
-  BookOpen,
-  Plus,
-  Pencil,
-  Trash2,
-  Search,
-  Save,
-} from "lucide-react";
-
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-
-type Ledger = {
-  id: number;
-  name: string;
-  group: string;
-  mobile: string;
-  gst: string;
-  balance: number;
-  address: string;
-};
-
-const groups = [
-  "Sundry Debtors",
-  "Sundry Creditors",
-  "Cash-in-Hand",
-  "Bank Accounts",
-  "Direct Expenses",
-  "Indirect Expenses",
-  "Sales Account",
-  "Purchase Account",
-];
-
-export default function LedgerPage() {
-
-  const [search, setSearch] = useState("");
-
-  const [ledgerName, setLedgerName] =
-    useState("");
-
-  const [group, setGroup] =
-    useState(groups[0]);
-
-  const [mobile, setMobile] =
-    useState("");
-
-  const [gst, setGst] =
-    useState("");
-
-  const [balance, setBalance] =
-    useState(0);
+      </div>
+           {/* Search */}
 
-  const [address, setAddress] =
-    useState("");
+      <Card className="p-6">
 
-  const [ledgers, setLedgers] =
-    useState<Ledger[]>([
-      {
-        id: 1,
-        name: "ABC Traders",
-        group: "Sundry Debtors",
-        mobile: "9876543210",
-        gst: "27ABCDE1234F1Z5",
-        balance: 25000,
-        address: "Pune",
-      },
-      {
-        id: 2,
-        name: "XYZ Suppliers",
-        group: "Sundry Creditors",
-        mobile: "9988776655",
-        gst: "27PQRSX4567A1Z2",
-        balance: 18000,
-        address: "Mumbai",
-      },
-    ]);
+        <div className="flex items-center gap-3">
 
-  const filtered = useMemo(() => {
+          <Search className="h-5 w-5 text-slate-500" />
 
-    return ledgers.filter((item) =>
-      item.name
-        .toLowerCase()
-        .includes(search.toLowerCase())
-    );
+          <Input
+            placeholder="Search ledger..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+
+        </div>
+
+      </Card>
+
+      <div className="grid gap-6 lg:grid-cols-3">
+
+        {/* Create Ledger */}
+
+        <Card className="p-6">
 
-  }, [search, ledgers]);
+          <h2 className="mb-6 text-xl font-semibold">
 
-  const addLedger = () => {
+            Create Ledger
 
-    if (!ledgerName) return;
+          </h2>
 
-    setLedgers((prev) => [
-      ...prev,
-      {
-        id: Date.now(),
-        name: ledgerName,
-        group,
-        mobile,
-        gst,
-        balance,
-        address,
-      },
-    ]);
+          <div className="space-y-4">
 
-    setLedgerName("");
-    setMobile("");
-    setGst("");
-    setBalance(0);
-    setAddress("");
+            <Input
+              placeholder="Ledger Name"
+              value={ledgerName}
+              onChange={(e) => setLedgerName(e.target.value)}
+            />
 
-  };
+            <select
+              value={group}
+              onChange={(e) => setGroup(e.target.value)}
+              className="w-full rounded-lg border p-3"
+            >
 
-  const deleteLedger = (id:number)=>{
+              {ledgerGroups.map((g) => (
 
-    setLedgers((prev)=>
-      prev.filter((x)=>x.id!==id)
-    );
+                <option
+                  key={g}
+                  value={g}
+                >
+                  {g}
+                </option>
 
-  };
+              ))}
 
-  return (
+            </select>
 
-<div className="space-y-8">
+            <Input
+              placeholder="Mobile Number"
+              value={mobile}
+              onChange={(e) => setMobile(e.target.value)}
+            />
 
-<div className="flex items-center justify-between">
+            <Input
+              placeholder="Email Address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
 
-<div>
+            <Input
+              placeholder="GST Number"
+              value={gst}
+              onChange={(e) => setGst(e.target.value)}
+            />
 
-<h1 className="flex items-center gap-3 text-3xl font-bold">
+            <Input
+              placeholder="PAN Number"
+              value={pan}
+              onChange={(e) => setPan(e.target.value)}
+            />
 
-<BookOpen className="text-blue-600"/>
+            <Input
+              placeholder="City"
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+            />
 
-Ledger Master
-
-</h1>
+            <Input
+              placeholder="State"
+              value={stateName}
+              onChange={(e) => setStateName(e.target.value)}
+            />
 
-<p className="mt-2 text-slate-500">
-
-Manage all business ledgers.
-
-</p>
-
-</div>
+            <Input
+              placeholder="Pincode"
+              value={pincode}
+              onChange={(e) => setPincode(e.target.value)}
+            />
 
-<Button
-onClick={addLedger}
-className="bg-blue-600 hover:bg-blue-700"
->
+            <Input
+              type="number"
+              placeholder="Opening Balance"
+              value={openingBalance}
+              onChange={(e) =>
+                setOpeningBalance(Number(e.target.value))
+              }
+            />
 
-<Plus className="mr-2 h-4 w-4"/>
+            <textarea
+              rows={4}
+              placeholder="Address"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              className="w-full rounded-lg border p-3"
+            />
 
-Create Ledger
+            <Button
+              onClick={addLedger}
+              className="w-full bg-blue-600 hover:bg-blue-700"
+            >
 
-</Button>
+              <Save className="mr-2 h-4 w-4" />
 
-</div>
+              Save Ledger
 
-<div className="grid gap-6 lg:grid-cols-3">
+            </Button>
 
-<Card className="p-6">
+          </div>
 
-<h2 className="mb-5 text-xl font-semibold">
+        </Card>
 
-Create Ledger
+        {/* Ledger Table */}
 
-</h2>
+        <Card className="lg:col-span-2 overflow-hidden">
 
-<div className="space-y-4">
+          <div className="overflow-x-auto">
 
-<Input
-placeholder="Ledger Name"
-value={ledgerName}
-onChange={(e)=>
-setLedgerName(e.target.value)
-}
-/>
+            <table className="min-w-full">
 
-<select
-value={group}
-onChange={(e)=>
-setGroup(e.target.value)
-}
-className="w-full rounded-lg border p-3"
->
+              <thead className="bg-slate-100">
 
-{groups.map((g)=>(
+                <tr>
 
-<option
-key={g}
-value={g}
->
+                  <th className="border p-3">Ledger</th>
 
-{g}
+                  <th className="border p-3">Group</th>
 
-</option>
+                  <th className="border p-3">Mobile</th>
 
-))}
+                  <th className="border p-3">GST</th>
 
-</select>
+                  <th className="border p-3">Balance</th>
 
-<Input
-placeholder="Mobile Number"
-value={mobile}
-onChange={(e)=>
-setMobile(e.target.value)
-}
-/>
+                  <th className="border p-3">Action</th>
 
-<Input
-placeholder="GST Number"
-value={gst}
-onChange={(e)=>
-setGst(e.target.value)
-}
-/>
+                </tr>
 
-<Input
-type="number"
-placeholder="Opening Balance"
-value={balance}
-onChange={(e)=>
-setBalance(Number(e.target.value))
-}
-/>
+              </thead>
 
-<textarea
-rows={4}
-placeholder="Address"
-value={address}
-onChange={(e)=>
-setAddress(e.target.value)
-}
-className="w-full rounded-lg border p-3"
-/>
+              <tbody>
 
-<Button
-onClick={addLedger}
-className="w-full"
->
+                {filteredLedgers.map((ledger) => (
 
-<Save className="mr-2 h-4 w-4"/>
+                  <tr
+                    key={ledger.id}
+                    className="hover:bg-slate-50"
+                  >
 
-Save Ledger
+                    <td className="border p-3 font-medium">
 
-</Button>
+                      {ledger.name}
 
-</div>
+                    </td>
 
-</Card>
-        {/* ================= Summary & Actions ================= */}
+                    <td className="border p-3">
+
+                      {ledger.group}
+
+                    </td>
+
+                    <td className="border p-3">
+
+                      {ledger.mobile}
+
+                    </td>
+
+                    <td className="border p-3">
+
+                      {ledger.gst}
+
+                    </td>
+
+                    <td className="border p-3 font-semibold text-green-600">
+
+                      ₹{ledger.openingBalance.toLocaleString()}
+
+                    </td>
+
+                    <td className="border p-3">
+
+                      <div className="flex gap-2">
+
+                        <Button
+                          size="icon"
+                          variant="outline"
+                        >
+
+                          <Pencil className="h-4 w-4" />
+
+                        </Button>
+
+                        <Button
+                          size="icon"
+                          variant="destructive"
+                          onClick={() =>
+                            deleteLedger(ledger.id)
+                          }
+                        >
+
+                          <Trash2 className="h-4 w-4" />
+
+                        </Button>
+
+                      </div>
+
+                    </td>
+
+                  </tr>
+
+                ))}
+
+              </tbody>
+
+            </table>
+
+          </div>
+
+        </Card>
+
+      </div>
+           {/* ================= Summary ================= */}
 
       <div className="grid gap-6 lg:grid-cols-2">
 
@@ -532,17 +502,15 @@ Save Ledger
 
             <div className="flex justify-between">
 
-              <span>Total Balance</span>
+              <span>Sundry Debtors</span>
 
-              <span className="font-semibold text-green-600">
+              <span className="font-semibold text-blue-600">
 
-                ₹
-                {ledgers
-                  .reduce(
-                    (sum, item) => sum + item.balance,
-                    0
-                  )
-                  .toLocaleString()}
+                {
+                  ledgers.filter(
+                    (x) => x.group === "Sundry Debtors"
+                  ).length
+                }
 
               </span>
 
@@ -550,11 +518,34 @@ Save Ledger
 
             <div className="flex justify-between">
 
-              <span>Filtered Records</span>
+              <span>Sundry Creditors</span>
 
-              <span>
+              <span className="font-semibold text-red-600">
 
-                {filtered.length}
+                {
+                  ledgers.filter(
+                    (x) => x.group === "Sundry Creditors"
+                  ).length
+                }
+
+              </span>
+
+            </div>
+
+            <div className="flex justify-between">
+
+              <span>Total Opening Balance</span>
+
+              <span className="font-semibold text-green-600">
+
+                ₹
+                {ledgers
+                  .reduce(
+                    (sum, item) =>
+                      sum + item.openingBalance,
+                    0
+                  )
+                  .toLocaleString()}
 
               </span>
 
@@ -564,19 +555,17 @@ Save Ledger
 
             <div className="rounded-lg bg-slate-100 p-4">
 
-              <h3 className="font-semibold">
-
+              <h3 className="mb-2 font-semibold">
                 Ledger Groups
-
               </h3>
 
-              <ul className="mt-3 space-y-2 text-sm text-slate-600">
+              <ul className="space-y-2 text-sm text-slate-600">
 
-                {groups.map((g) => (
+                {ledgerGroups.map((group) => (
 
-                  <li key={g}>
+                  <li key={group}>
 
-                    • {g}
+                    • {group}
 
                   </li>
 
@@ -589,6 +578,8 @@ Save Ledger
           </div>
 
         </Card>
+
+        {/* ================= Actions ================= */}
 
         <Card className="p-6">
 
@@ -607,7 +598,7 @@ Save Ledger
               }
             >
 
-              <Save className="mr-2 h-4 w-4"/>
+              <Save className="mr-2 h-4 w-4" />
 
               Save Ledger
 
@@ -615,14 +606,12 @@ Save Ledger
 
             <Button
               variant="outline"
-              onClick={() =>
-                window.print()
-              }
+              onClick={() => window.print()}
             >
 
-              <Printer className="mr-2 h-4 w-4"/>
+              <Printer className="mr-2 h-4 w-4" />
 
-              Print Ledger List
+              Print Ledger
 
             </Button>
 
@@ -633,7 +622,7 @@ Save Ledger
               }
             >
 
-              <Download className="mr-2 h-4 w-4"/>
+              <Download className="mr-2 h-4 w-4" />
 
               Export Excel
 
@@ -646,7 +635,7 @@ Save Ledger
               }
             >
 
-              <Download className="mr-2 h-4 w-4"/>
+              <Download className="mr-2 h-4 w-4" />
 
               Download PDF
 
@@ -664,9 +653,9 @@ Save Ledger
 
             <p className="mt-2 text-sm text-slate-600">
 
-              Manage all customer, supplier, bank,
-              cash and expense ledgers from one place.
-              Search, edit and delete ledgers easily.
+              Manage customer, supplier, bank,
+              cash and expense ledgers from a
+              single professional ERP interface.
 
             </p>
 
