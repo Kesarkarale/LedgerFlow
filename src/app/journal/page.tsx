@@ -465,3 +465,167 @@ export default function JournalPage() {
         </div>
 
       </Card>
+      {/* ================= Journal Summary ================= */}
+
+      <div className="grid gap-6 lg:grid-cols-2">
+
+        <Card className="p-6">
+
+          <h2 className="mb-5 text-xl font-semibold">
+            Journal Summary
+          </h2>
+
+          <div className="space-y-4">
+
+            <div className="flex justify-between">
+
+              <span>Voucher Number</span>
+
+              <span>{voucherNo}</span>
+
+            </div>
+
+            <div className="flex justify-between">
+
+              <span>Date</span>
+
+              <span>{voucherDate || "-"}</span>
+
+            </div>
+
+            <div className="flex justify-between">
+
+              <span>Total Debit</span>
+
+              <span className="font-semibold text-green-600">
+
+                ₹{totalDebit.toLocaleString()}
+
+              </span>
+
+            </div>
+
+            <div className="flex justify-between">
+
+              <span>Total Credit</span>
+
+              <span className="font-semibold text-blue-600">
+
+                ₹{totalCredit.toLocaleString()}
+
+              </span>
+
+            </div>
+
+            <div className="flex justify-between">
+
+              <span>Total Entries</span>
+
+              <span>{entries.length}</span>
+
+            </div>
+
+            <hr />
+
+            <div className="rounded-lg bg-slate-100 p-4">
+
+              <h3 className="mb-2 font-semibold">
+                Narration
+              </h3>
+
+              <p className="text-sm text-slate-600">
+
+                {narration || "No narration added."}
+
+              </p>
+
+            </div>
+
+          </div>
+
+        </Card>
+
+        <Card className="p-6">
+
+          <h2 className="mb-5 text-xl font-semibold">
+            Actions
+          </h2>
+
+          <div className="grid gap-4">
+
+            <Button
+              className="bg-purple-600 hover:bg-purple-700"
+              onClick={() =>
+                alert("Journal Voucher Saved Successfully")
+              }
+            >
+
+              <Save className="mr-2 h-4 w-4"/>
+
+              Save Journal Voucher
+
+            </Button>
+
+            <Button
+              variant="outline"
+              onClick={() => window.print()}
+            >
+
+              <Printer className="mr-2 h-4 w-4"/>
+
+              Print Journal
+
+            </Button>
+
+            <Button
+              variant="outline"
+              onClick={() =>
+                alert("PDF Export Coming Soon")
+              }
+            >
+
+              <Download className="mr-2 h-4 w-4"/>
+
+              Download PDF
+
+            </Button>
+
+          </div>
+
+          <div className="mt-8 rounded-lg border border-purple-200 bg-purple-50 p-4">
+
+            <h3 className="mb-2 font-semibold text-purple-700">
+
+              Validation Status
+
+            </h3>
+
+            {totalDebit === totalCredit ? (
+
+              <p className="font-medium text-green-600">
+
+                ✅ Journal Voucher is Balanced
+
+              </p>
+
+            ) : (
+
+              <p className="font-medium text-red-600">
+
+                ❌ Debit & Credit totals must match
+
+              </p>
+
+            )}
+
+          </div>
+
+        </Card>
+
+      </div>
+
+    </div>
+
+  );
+
+}
