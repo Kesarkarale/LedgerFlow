@@ -214,6 +214,7 @@ export default function SuppliersPage() {
             {suppliers.length}
           </h2>
         </Card>
+      </div>
               {/* ================= Search ================= */}
 
       <Card className="p-6">
@@ -628,5 +629,4 @@ export default function SuppliersPage() {
     </div>
 
   );
-
 }
