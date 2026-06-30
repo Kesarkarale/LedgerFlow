@@ -1,4 +1,4 @@
-"use client";
+ "use client";
 
 import { useMemo, useState } from "react";
 import {
@@ -12,18 +12,20 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-const ledgers = [
-  "ABC Traders",
-  "XYZ Enterprises",
-  "Sai Electricals",
-  "Shree Traders",
-];
+type PaymentVoucher = {
+  id: number;
+  ledger: string;
+  amount: number;
+  mode: string;
+  reference: string;
+  remarks: string;
+};
 
-const accounts = [
+const ledgerList = [
+  "ABC Traders",
+  "Sai Suppliers",
   "Cash Account",
-  "HDFC Bank",
-  "ICICI Bank",
-  "SBI Bank",
+  "Bank Account",
 ];
 
 export default function PaymentPage() {
@@ -34,24 +36,65 @@ export default function PaymentPage() {
 
   const [ledger, setLedger] = useState("");
 
-  const [account, setAccount] = useState("");
+  const [amount, setAmount] = useState(0);
 
-  const [paymentMode, setPaymentMode] =
-    useState("Cash");
+  const [mode, setMode] = useState("Cash");
 
-  const [amount, setAmount] =
-    useState(0);
+  const [reference, setReference] = useState("");
 
-  const [reference, setReference] =
-    useState("");
+  const [remarks, setRemarks] = useState("");
 
-  const [chequeNo, setChequeNo] =
-    useState("");
+  const [payments, setPayments] =
+    useState<PaymentVoucher[]>([
+      {
+        id: 1,
+        ledger: "ABC Traders",
+        amount: 15000,
+        mode: "Cash",
+        reference: "REF001",
+        remarks: "Purchase Payment",
+      },
+    ]);
 
-  const [remarks, setRemarks] =
-    useState("");
+  function saveVoucher() {
 
-  const total = useMemo(() => amount,[amount]);
+    if (!ledger || amount <= 0) return;
+
+    setPayments((prev) => [
+      ...prev,
+      {
+        id: Date.now(),
+        ledger,
+        amount,
+        mode,
+        reference,
+        remarks,
+      },
+    ]);
+
+    setLedger("");
+    setAmount(0);
+    setMode("Cash");
+    setReference("");
+    setRemarks("");
+  }
+
+  function deleteVoucher(id: number) {
+
+    setPayments((prev) =>
+      prev.filter((x) => x.id !== id)
+    );
+
+  }
+
+  const totalPayment = useMemo(() => {
+
+    return payments.reduce(
+      (sum, p) => sum + p.amount,
+      0
+    );
+
+  }, [payments]);
 
   return (
 
@@ -63,7 +106,7 @@ export default function PaymentPage() {
 
 <h1 className="flex items-center gap-3 text-3xl font-bold">
 
-<Wallet className="text-blue-600"/>
+<Wallet className="h-8 w-8 text-emerald-600"/>
 
 Payment Voucher
 
@@ -71,7 +114,7 @@ Payment Voucher
 
 <p className="mt-2 text-slate-500">
 
-Record supplier payments and expenses.
+Record supplier and expense payments.
 
 </p>
 
@@ -95,7 +138,10 @@ PDF
 
 </Button>
 
-<Button className="bg-blue-600 hover:bg-blue-700">
+<Button
+className="bg-emerald-600 hover:bg-emerald-700"
+onClick={saveVoucher}
+>
 
 <Save className="mr-2 h-4 w-4"/>
 
@@ -107,157 +153,83 @@ Save
 
 </div>
 
-<div className="grid gap-6 lg:grid-cols-2">
+<div className="grid gap-5 md:grid-cols-4">
 
-<Card className="p-6">
+<Card className="p-5">
 
-<h2 className="mb-5 text-xl font-semibold">
+<p className="text-sm text-slate-500">
 
-Voucher Details
+Total Vouchers
+
+</p>
+
+<h2 className="mt-3 text-3xl font-bold">
+
+{payments.length}
 
 </h2>
-
-<div className="space-y-4">
-
-<Input
-value={voucherNo}
-readOnly
-/>
-
-<Input
-type="date"
-value={date}
-onChange={(e)=>setDate(e.target.value)}
-/>
-
-<select
-value={paymentMode}
-onChange={(e)=>setPaymentMode(e.target.value)}
-className="w-full rounded-lg border p-3"
->
-
-<option>Cash</option>
-<option>Bank</option>
-<option>UPI</option>
-<option>Cheque</option>
-<option>NEFT</option>
-
-</select>
-
-<Input
-placeholder="Reference Number"
-value={reference}
-onChange={(e)=>setReference(e.target.value)}
-/>
-
-<Input
-placeholder="Cheque Number"
-value={chequeNo}
-onChange={(e)=>setChequeNo(e.target.value)}
-/>
-
-</div>
 
 </Card>
 
-<Card className="p-6">
+<Card className="p-5">
 
-<h2 className="mb-5 text-xl font-semibold">
+<p className="text-sm text-slate-500">
 
-Payment Details
+Total Payment
+
+</p>
+
+<h2 className="mt-3 text-3xl font-bold text-green-600">
+
+₹{totalPayment.toLocaleString()}
 
 </h2>
 
-<div className="space-y-4">
+</Card>
 
-<select
-value={ledger}
-onChange={(e)=>setLedger(e.target.value)}
-className="w-full rounded-lg border p-3"
->
+<Card className="p-5">
 
-<option value="">
+<p className="text-sm text-slate-500">
 
-Select Ledger
+Payment Modes
 
-</option>
+</p>
 
-{ledgers.map((item)=>(
+<h2 className="mt-3 text-3xl font-bold text-blue-600">
 
-<option
-key={item}
-value={item}
->
+4
 
-{item}
+</h2>
 
-</option>
+</Card>
 
-))}
+<Card className="p-5">
 
-</select>
+<p className="text-sm text-slate-500">
 
-<select
-value={account}
-onChange={(e)=>setAccount(e.target.value)}
-className="w-full rounded-lg border p-3"
->
+Ledgers
 
-<option value="">
+</p>
 
-Select Account
+<h2 className="mt-3 text-3xl font-bold text-emerald-600">
 
-</option>
+{ledgerList.length}
 
-{accounts.map((item)=>(
-
-<option
-key={item}
-value={item}
->
-
-{item}
-
-</option>
-
-))}
-
-</select>
-
-<Input
-type="number"
-placeholder="Amount"
-value={amount}
-onChange={(e)=>
-setAmount(Number(e.target.value))
-}
-/>
-
-<textarea
-rows={5}
-placeholder="Narration"
-value={remarks}
-onChange={(e)=>
-setRemarks(e.target.value)
-}
-className="w-full rounded-lg border p-3"
-/>
-
-</div>
+</h2>
 
 </Card>
 
 </div>
-        {/* ================= Summary ================= */}
+        {/* ================= Payment Form ================= */}
 
       <div className="grid gap-6 lg:grid-cols-2">
 
-        {/* Narration */}
-
         <Card className="p-6">
 
-          <h2 className="mb-5 text-xl font-semibold">
-            Additional Information
+          <h2 className="mb-6 text-xl font-semibold">
+
+            Payment Details
+
           </h2>
 
           <div className="space-y-5">
@@ -265,7 +237,161 @@ className="w-full rounded-lg border p-3"
             <div>
 
               <label className="mb-2 block text-sm font-medium">
-                Narration
+
+                Voucher Number
+
+              </label>
+
+              <Input
+                value={voucherNo}
+                readOnly
+              />
+
+            </div>
+
+            <div>
+
+              <label className="mb-2 block text-sm font-medium">
+
+                Voucher Date
+
+              </label>
+
+              <Input
+                type="date"
+                value={date}
+                onChange={(e) =>
+                  setDate(e.target.value)
+                }
+              />
+
+            </div>
+
+            <div>
+
+              <label className="mb-2 block text-sm font-medium">
+
+                Ledger
+
+              </label>
+
+              <select
+                value={ledger}
+                onChange={(e) =>
+                  setLedger(e.target.value)
+                }
+                className="w-full rounded-lg border border-slate-300 p-3"
+              >
+
+                <option value="">
+
+                  Select Ledger
+
+                </option>
+
+                {ledgerList.map((item) => (
+
+                  <option
+                    key={item}
+                    value={item}
+                  >
+
+                    {item}
+
+                  </option>
+
+                ))}
+
+              </select>
+
+            </div>
+
+            <div>
+
+              <label className="mb-2 block text-sm font-medium">
+
+                Amount
+
+              </label>
+
+              <Input
+                type="number"
+                value={amount}
+                onChange={(e) =>
+                  setAmount(Number(e.target.value))
+                }
+              />
+
+            </div>
+
+            <div>
+
+              <label className="mb-2 block text-sm font-medium">
+
+                Payment Mode
+
+              </label>
+
+              <select
+                value={mode}
+                onChange={(e) =>
+                  setMode(e.target.value)
+                }
+                className="w-full rounded-lg border border-slate-300 p-3"
+              >
+
+                <option>Cash</option>
+
+                <option>Bank</option>
+
+                <option>UPI</option>
+
+                <option>Cheque</option>
+
+              </select>
+
+            </div>
+
+          </div>
+
+        </Card>
+
+        {/* ================= Reference ================= */}
+
+        <Card className="p-6">
+
+          <h2 className="mb-6 text-xl font-semibold">
+
+            Additional Information
+
+          </h2>
+
+          <div className="space-y-5">
+
+            <div>
+
+              <label className="mb-2 block text-sm font-medium">
+
+                Reference Number
+
+              </label>
+
+              <Input
+                value={reference}
+                onChange={(e) =>
+                  setReference(e.target.value)
+                }
+                placeholder="Reference Number"
+              />
+
+            </div>
+
+            <div>
+
+              <label className="mb-2 block text-sm font-medium">
+
+                Remarks
+
               </label>
 
               <textarea
@@ -274,137 +400,220 @@ className="w-full rounded-lg border p-3"
                 onChange={(e) =>
                   setRemarks(e.target.value)
                 }
-                className="w-full rounded-lg border p-3"
-                placeholder="Payment narration..."
+                placeholder="Enter Remarks..."
+                className="w-full rounded-lg border border-slate-300 p-3"
               />
 
             </div>
 
-            <div>
+            <Button
+              className="w-full bg-emerald-600 hover:bg-emerald-700"
+              onClick={saveVoucher}
+            >
 
-              <label className="mb-2 block text-sm font-medium">
-                Attachment
-              </label>
+              <Save className="mr-2 h-4 w-4"/>
 
-              <Input type="file" />
+              Save Payment
 
-            </div>
-
-          </div>
-
-        </Card>
-
-        {/* Summary */}
-
-        <Card className="p-6">
-
-          <h2 className="mb-5 text-xl font-semibold">
-            Payment Summary
-          </h2>
-
-          <div className="space-y-4">
-
-            <div className="flex justify-between">
-
-              <span>Ledger</span>
-
-              <span>{ledger || "-"}</span>
-
-            </div>
-
-            <div className="flex justify-between">
-
-              <span>Account</span>
-
-              <span>{account || "-"}</span>
-
-            </div>
-
-            <div className="flex justify-between">
-
-              <span>Payment Mode</span>
-
-              <span>{paymentMode}</span>
-
-            </div>
-
-            <div className="flex justify-between">
-
-              <span>Reference</span>
-
-              <span>{reference || "-"}</span>
-
-            </div>
-
-            <div className="flex justify-between">
-
-              <span>Cheque No.</span>
-
-              <span>{chequeNo || "-"}</span>
-
-            </div>
-
-            <hr />
-
-            <div className="flex justify-between text-3xl font-bold text-blue-600">
-
-              <span>Total Amount</span>
-
-              <span>
-
-                ₹{total.toLocaleString()}
-
-              </span>
-
-            </div>
-
-            <div className="grid gap-3 pt-6">
-
-              <Button
-                className="bg-blue-600 hover:bg-blue-700"
-                onClick={() =>
-                  alert("Payment Saved Successfully")
-                }
-              >
-
-                <Save className="mr-2 h-4 w-4" />
-
-                Save Voucher
-
-              </Button>
-
-              <Button
-                variant="outline"
-                onClick={() => window.print()}
-              >
-
-                <Printer className="mr-2 h-4 w-4" />
-
-                Print Voucher
-
-              </Button>
-
-              <Button
-                variant="outline"
-                onClick={() =>
-                  alert("PDF Export Coming Soon")
-                }
-              >
-
-                <Download className="mr-2 h-4 w-4" />
-
-                Download PDF
-
-              </Button>
-
-            </div>
+            </Button>
 
           </div>
 
         </Card>
 
       </div>
+        {/* ================= Payment History ================= */}
+
+      <Card className="p-6">
+
+        <h2 className="mb-6 text-xl font-semibold">
+
+          Payment History
+
+        </h2>
+
+        <div className="overflow-x-auto">
+
+          <table className="min-w-full">
+
+            <thead className="bg-slate-100">
+
+              <tr>
+
+                <th className="border p-3">Voucher</th>
+
+                <th className="border p-3">Ledger</th>
+
+                <th className="border p-3">Mode</th>
+
+                <th className="border p-3">Reference</th>
+
+                <th className="border p-3">Amount</th>
+
+                <th className="border p-3">Remarks</th>
+
+                <th className="border p-3">Action</th>
+
+              </tr>
+
+            </thead>
+
+            <tbody>
+
+              {payments.map((payment) => (
+
+                <tr
+                  key={payment.id}
+                  className="hover:bg-slate-50"
+                >
+
+                  <td className="border p-3">
+
+                    {voucherNo}
+
+                  </td>
+
+                  <td className="border p-3">
+
+                    {payment.ledger}
+
+                  </td>
+
+                  <td className="border p-3">
+
+                    {payment.mode}
+
+                  </td>
+
+                  <td className="border p-3">
+
+                    {payment.reference}
+
+                  </td>
+
+                  <td className="border p-3 font-semibold text-green-600">
+
+                    ₹{payment.amount.toLocaleString()}
+
+                  </td>
+
+                  <td className="border p-3">
+
+                    {payment.remarks}
+
+                  </td>
+
+                  <td className="border p-3">
+
+                    <Button
+                      variant="destructive"
+                      size="icon"
+                      onClick={() =>
+                        deleteVoucher(payment.id)
+                      }
+                    >
+
+                      <Trash2 className="h-4 w-4"/>
+
+                    </Button>
+
+                  </td>
+
+                </tr>
+
+              ))}
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </Card>
+
+      {/* ================= Summary ================= */}
+
+      <Card className="p-6">
+
+        <h2 className="mb-5 text-xl font-semibold">
+
+          Payment Summary
+
+        </h2>
+
+        <div className="space-y-4">
+
+          <div className="flex justify-between">
+
+            <span>Total Vouchers</span>
+
+            <span className="font-semibold">
+
+              {payments.length}
+
+            </span>
+
+          </div>
+
+          <div className="flex justify-between">
+
+            <span>Total Payment</span>
+
+            <span className="font-semibold text-green-600">
+
+              ₹{totalPayment.toLocaleString()}
+
+            </span>
+
+          </div>
+
+          <hr />
+
+          <div className="grid gap-3 pt-4">
+
+            <Button
+              className="bg-emerald-600 hover:bg-emerald-700"
+              onClick={saveVoucher}
+            >
+
+              <Save className="mr-2 h-4 w-4"/>
+
+              Save Voucher
+
+            </Button>
+
+            <Button
+              variant="outline"
+              onClick={() => window.print()}
+            >
+
+              <Printer className="mr-2 h-4 w-4"/>
+
+              Print Voucher
+
+            </Button>
+
+            <Button
+              variant="outline"
+              onClick={() =>
+                alert("PDF Export Coming Soon")
+              }
+            >
+
+              <Download className="mr-2 h-4 w-4"/>
+
+              Download PDF
+
+            </Button>
+
+          </div>
+
+        </div>
+
+      </Card>
 
     </div>
+
   );
+
 }
