@@ -69,6 +69,16 @@ const shortcuts = [
     icon: Receipt,
     href: "/sales",
   },
+  {
+  title: "Purchase",
+  icon: ShoppingCart,
+  href: "/purchase",
+},
+{
+  title: "Payment",
+  icon: Wallet,
+  href: "/payment",
+},
 ];
 
 export default function DashboardPage() {
