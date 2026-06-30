@@ -91,7 +91,7 @@ const modules = [
 export default function DashboardPage() {
 
   return (
-
+      <AppLayout>
 <div className="space-y-8">
 
 {/* HERO */}
@@ -903,7 +903,7 @@ ERP Modules
       </div>
 
     </div>
-
+      </AppLayout>
   );
 
 }
