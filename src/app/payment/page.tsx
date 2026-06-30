@@ -6,6 +6,7 @@ import {
   Save,
   Printer,
   Download,
+ Trash2,
 } from "lucide-react";
 
 import { Card } from "@/components/ui/card";
