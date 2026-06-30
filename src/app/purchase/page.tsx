@@ -1,13 +1,13 @@
-"use client";
+ "use client";
 
 import { useMemo, useState } from "react";
 import {
-  Package,
+  ShoppingCart,
   Plus,
-  Trash2,
   Save,
   Printer,
   Download,
+  Trash2,
 } from "lucide-react";
 
 import { Card } from "@/components/ui/card";
@@ -27,39 +27,40 @@ type PurchaseItem = {
 
 const suppliers = [
   "ABC Suppliers",
-  "Tech Distributors",
-  "Shree Electronics",
-  "Global Traders",
+  "Sai Traders",
+  "Om Enterprises",
+  "Shree Distributors",
 ];
 
-const products = [
+const productList = [
   {
     name: "HP Laptop",
     hsn: "8471",
-    rate: 48000,
+    rate: 45000,
     gst: 18,
-    unit: "Pc",
+    unit: "Nos",
   },
   {
     name: "Dell Mouse",
     hsn: "8471",
-    rate: 450,
+    rate: 420,
     gst: 18,
-    unit: "Pc",
+    unit: "Nos",
   },
   {
     name: "Keyboard",
     hsn: "8471",
     rate: 700,
     gst: 18,
-    unit: "Pc",
+    unit: "Nos",
   },
 ];
 
 export default function PurchasePage() {
 
+  const [invoiceNo] = useState("PUR-1001");
   const [supplier, setSupplier] = useState("");
-  const [purchaseDate, setPurchaseDate] = useState("");
+  const [invoiceDate, setInvoiceDate] = useState("");
   const [paymentMode, setPaymentMode] = useState("Cash");
   const [notes, setNotes] = useState("");
 
@@ -69,28 +70,31 @@ export default function PurchasePage() {
       product: "",
       hsn: "",
       qty: 1,
-      unit: "Pc",
+      unit: "Nos",
       rate: 0,
       gst: 18,
       discount: 0,
     },
   ]);
 
-  const updateItem = (
+  function updateItem(
     id: number,
     key: keyof PurchaseItem,
-    value: string | number
-  ) => {
+    value: any
+  ) {
     setItems((prev) =>
       prev.map((item) =>
         item.id === id
-          ? { ...item, [key]: value }
+          ? {
+              ...item,
+              [key]: value,
+            }
           : item
       )
     );
-  };
+  }
 
-  const addItem = () => {
+  function addItem() {
     setItems((prev) => [
       ...prev,
       {
@@ -98,108 +102,123 @@ export default function PurchasePage() {
         product: "",
         hsn: "",
         qty: 1,
-        unit: "Pc",
+        unit: "Nos",
         rate: 0,
         gst: 18,
         discount: 0,
       },
     ]);
-  };
+  }
 
-  const removeItem = (id: number) => {
+  function removeItem(id: number) {
     setItems((prev) =>
       prev.filter((item) => item.id !== id)
     );
-  };
+  }
 
   const subtotal = useMemo(() => {
-    return items.reduce((sum, item) => {
-      return sum + item.qty * item.rate - item.discount;
-    }, 0);
+    return items.reduce(
+      (sum, item) =>
+        sum +
+        item.qty * item.rate -
+        item.discount,
+      0
+    );
   }, [items]);
 
   const gstAmount = useMemo(() => {
     return items.reduce((sum, item) => {
       const amount =
-        item.qty * item.rate - item.discount;
+        item.qty * item.rate -
+        item.discount;
 
-      return sum + (amount * item.gst) / 100;
+      return (
+        sum +
+        (amount * item.gst) / 100
+      );
     }, 0);
   }, [items]);
 
-  const grandTotal = subtotal + gstAmount;
+  const grandTotal =
+    subtotal + gstAmount;
 
   return (
-    <div className="space-y-8">
 
-      {/* Header */}
+<div className="space-y-8">
 
-      <div className="flex items-center justify-between">
+<div className="flex items-center justify-between">
 
-        <div>
+<div>
 
-          <h1 className="flex items-center gap-3 text-3xl font-bold">
+<h1 className="flex items-center gap-3 text-3xl font-bold">
 
-            <Package className="text-green-600" />
+<ShoppingCart className="h-8 w-8 text-green-600"/>
 
-            Purchase Invoice
+Purchase Invoice
 
-          </h1>
+</h1>
 
-          <p className="mt-2 text-slate-500">
-            Create purchase bills and manage supplier invoices.
-          </p>
+<p className="mt-2 text-slate-500">
 
-        </div>
+Create GST Purchase Bills.
 
-        <div className="flex gap-3">
+</p>
 
-          <Button variant="outline">
+</div>
 
-            <Printer className="mr-2 h-4 w-4"/>
+<div className="flex gap-3">
 
-            Print
+<Button variant="outline">
 
-          </Button>
+<Printer className="mr-2 h-4 w-4"/>
 
-          <Button variant="outline">
+Print
 
-            <Download className="mr-2 h-4 w-4"/>
+</Button>
 
-            PDF
+<Button variant="outline">
 
-          </Button>
+<Download className="mr-2 h-4 w-4"/>
 
-          <Button className="bg-green-600 hover:bg-green-700">
+PDF
 
-            <Save className="mr-2 h-4 w-4"/>
+</Button>
 
-            Save Purchase
+<Button className="bg-green-600 hover:bg-green-700">
 
-          </Button>
+<Save className="mr-2 h-4 w-4"/>
 
-        </div>
+Save
 
-      </div>
+</Button>
 
-      {/* Supplier & Purchase Details */}
+</div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
+</div>
 
-        <Card className="p-6">
+<div className="grid gap-6 lg:grid-cols-2">
+        {/* ================= Supplier Details ================= */}
 
-          <h2 className="mb-5 text-xl font-semibold">
-            Supplier Details
-          </h2>
+      <Card className="p-6">
 
-          <div className="space-y-4">
+        <h2 className="mb-6 text-xl font-semibold">
+
+          Supplier Details
+
+        </h2>
+
+        <div className="space-y-5">
+
+          <div>
+
+            <label className="mb-2 block text-sm font-medium">
+              Supplier
+            </label>
 
             <select
               value={supplier}
-              onChange={(e) =>
-                setSupplier(e.target.value)
-              }
-              className="w-full rounded-lg border p-3"
+              onChange={(e) => setSupplier(e.target.value)}
+              className="w-full rounded-lg border border-slate-300 p-3 outline-none focus:border-green-600"
             >
 
               <option value="">
@@ -219,51 +238,119 @@ export default function PurchasePage() {
 
             </select>
 
-            <Input placeholder="Supplier Mobile"/>
+          </div>
 
-            <Input placeholder="Supplier Email"/>
+          <div>
 
-            <Input placeholder="GST Number"/>
+            <label className="mb-2 block text-sm font-medium">
+              Mobile Number
+            </label>
+
+            <Input placeholder="9876543210" />
+
+          </div>
+
+          <div>
+
+            <label className="mb-2 block text-sm font-medium">
+              Email
+            </label>
+
+            <Input placeholder="supplier@email.com" />
+
+          </div>
+
+          <div>
+
+            <label className="mb-2 block text-sm font-medium">
+              GST Number
+            </label>
+
+            <Input placeholder="27ABCDE1234F1Z5" />
+
+          </div>
+
+          <div>
+
+            <label className="mb-2 block text-sm font-medium">
+              Supplier Address
+            </label>
 
             <textarea
               rows={4}
-              placeholder="Supplier Address"
-              className="w-full rounded-lg border p-3"
+              placeholder="Enter Supplier Address"
+              className="w-full rounded-lg border border-slate-300 p-3 outline-none focus:border-green-600"
             />
 
           </div>
 
-        </Card>
+        </div>
 
-        <Card className="p-6">
+      </Card>
 
-          <h2 className="mb-5 text-xl font-semibold">
-            Purchase Details
-          </h2>
+      {/* ================= Purchase Details ================= */}
 
-          <div className="space-y-4">
+      <Card className="p-6">
+
+        <h2 className="mb-6 text-xl font-semibold">
+
+          Purchase Details
+
+        </h2>
+
+        <div className="space-y-5">
+
+          <div>
+
+            <label className="mb-2 block text-sm font-medium">
+              Invoice Number
+            </label>
 
             <Input
-              value="PUR-1001"
+              value={invoiceNo}
               readOnly
             />
 
+          </div>
+
+          <div>
+
+            <label className="mb-2 block text-sm font-medium">
+              Invoice Date
+            </label>
+
             <Input
               type="date"
-              value={purchaseDate}
-              onChange={(e)=>
-                setPurchaseDate(e.target.value)
+              value={invoiceDate}
+              onChange={(e) =>
+                setInvoiceDate(e.target.value)
               }
             />
 
-            <Input type="date"/>
+          </div>
+
+          <div>
+
+            <label className="mb-2 block text-sm font-medium">
+              Due Date
+            </label>
+
+            <Input type="date" />
+
+          </div>
+
+          <div>
+
+            <label className="mb-2 block text-sm font-medium">
+              Payment Mode
+            </label>
 
             <select
               value={paymentMode}
-              onChange={(e)=>
+              onChange={(e) =>
                 setPaymentMode(e.target.value)
               }
-              className="w-full rounded-lg border p-3"
+              className="w-full rounded-lg border border-slate-300 p-3 outline-none focus:border-green-600"
             >
 
               <option>Cash</option>
@@ -274,16 +361,34 @@ export default function PurchasePage() {
 
             </select>
 
-            <Input placeholder="Reference Number"/>
+          </div>
 
-            <Input placeholder="Purchase By"/>
+          <div>
+
+            <label className="mb-2 block text-sm font-medium">
+              Reference Number
+            </label>
+
+            <Input placeholder="Optional" />
 
           </div>
 
-        </Card>
+          <div>
 
-      </div>
-            {/* ================= Purchase Items ================= */}
+            <label className="mb-2 block text-sm font-medium">
+              Purchase By
+            </label>
+
+            <Input placeholder="Admin" />
+
+          </div>
+
+        </div>
+
+      </Card>
+
+    </div>
+        {/* ================= Purchase Items ================= */}
 
       <Card className="p-6">
 
@@ -292,11 +397,15 @@ export default function PurchasePage() {
           <div>
 
             <h2 className="text-xl font-semibold">
+
               Purchase Items
+
             </h2>
 
             <p className="text-sm text-slate-500">
-              Add products purchased from supplier
+
+              Add products for this purchase invoice
+
             </p>
 
           </div>
@@ -305,28 +414,39 @@ export default function PurchasePage() {
             onClick={addItem}
             className="bg-green-600 hover:bg-green-700"
           >
-            <Plus className="mr-2 h-4 w-4" />
+
+            <Plus className="mr-2 h-4 w-4"/>
+
             Add Item
+
           </Button>
 
         </div>
 
         <div className="overflow-x-auto">
 
-          <table className="min-w-full border rounded-lg">
+          <table className="min-w-full border">
 
             <thead className="bg-slate-100">
 
               <tr>
 
                 <th className="border p-3">Product</th>
+
                 <th className="border p-3">HSN</th>
+
                 <th className="border p-3">Qty</th>
+
                 <th className="border p-3">Unit</th>
-                <th className="border p-3">Purchase Rate</th>
+
+                <th className="border p-3">Rate</th>
+
                 <th className="border p-3">GST %</th>
+
                 <th className="border p-3">Discount</th>
+
                 <th className="border p-3">Amount</th>
+
                 <th className="border p-3">Action</th>
 
               </tr>
@@ -352,8 +472,10 @@ export default function PurchasePage() {
                         onChange={(e) => {
 
                           const selected =
-                            products.find(
-                              p => p.name === e.target.value
+                            productList.find(
+                              (p) =>
+                                p.name ===
+                                e.target.value
                             );
 
                           updateItem(
@@ -364,28 +486,51 @@ export default function PurchasePage() {
 
                           if (selected) {
 
-                            updateItem(item.id, "hsn", selected.hsn);
-                            updateItem(item.id, "rate", selected.rate);
-                            updateItem(item.id, "gst", selected.gst);
-                            updateItem(item.id, "unit", selected.unit);
+                            updateItem(
+                              item.id,
+                              "hsn",
+                              selected.hsn
+                            );
+
+                            updateItem(
+                              item.id,
+                              "rate",
+                              selected.rate
+                            );
+
+                            updateItem(
+                              item.id,
+                              "gst",
+                              selected.gst
+                            );
+
+                            updateItem(
+                              item.id,
+                              "unit",
+                              selected.unit
+                            );
 
                           }
 
                         }}
-                        className="w-52 rounded border p-2"
+                        className="w-44 rounded border p-2"
                       >
 
                         <option value="">
-                          Select Product
+
+                          Select
+
                         </option>
 
-                        {products.map((p) => (
+                        {productList.map((p) => (
 
                           <option
                             key={p.name}
                             value={p.name}
                           >
+
                             {p.name}
+
                           </option>
 
                         ))}
@@ -492,7 +637,7 @@ export default function PurchasePage() {
                         }
                       >
 
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="h-4 w-4"/>
 
                       </Button>
 
@@ -511,7 +656,7 @@ export default function PurchasePage() {
         </div>
 
       </Card>
-            {/* ================= Summary ================= */}
+        {/* ================= Notes & Summary ================= */}
 
       <div className="grid gap-6 lg:grid-cols-2">
 
@@ -535,8 +680,8 @@ export default function PurchasePage() {
                 rows={5}
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                placeholder="Write purchase notes..."
-                className="w-full rounded-lg border p-3"
+                placeholder="Purchase Notes..."
+                className="w-full rounded-lg border border-slate-300 p-3"
               />
 
             </div>
@@ -549,8 +694,8 @@ export default function PurchasePage() {
 
               <textarea
                 rows={5}
-                placeholder="Payment due within 30 days."
-                className="w-full rounded-lg border p-3"
+                placeholder="Goods received in good condition."
+                className="w-full rounded-lg border border-slate-300 p-3"
               />
 
             </div>
@@ -559,7 +704,7 @@ export default function PurchasePage() {
 
         </Card>
 
-        {/* Purchase Summary */}
+        {/* Summary */}
 
         <Card className="p-6">
 
@@ -573,9 +718,7 @@ export default function PurchasePage() {
 
               <span>Subtotal</span>
 
-              <span>
-                ₹{subtotal.toLocaleString()}
-              </span>
+              <span>₹{subtotal.toLocaleString()}</span>
 
             </div>
 
@@ -612,39 +755,39 @@ export default function PurchasePage() {
               <span>Total Discount</span>
 
               <span>
+
                 ₹
                 {items
                   .reduce(
-                    (sum, item) => sum + item.discount,
+                    (sum, item) =>
+                      sum + item.discount,
                     0
                   )
                   .toLocaleString()}
+
               </span>
 
             </div>
 
             <hr />
 
-            <div className="flex justify-between text-3xl font-bold text-green-600">
+            <div className="flex justify-between text-2xl font-bold text-green-600">
 
               <span>Grand Total</span>
 
               <span>
+
                 ₹{grandTotal.toLocaleString()}
+
               </span>
 
             </div>
 
             <div className="grid gap-3 pt-6">
 
-              <Button
-                className="bg-green-600 hover:bg-green-700"
-                onClick={() => {
-                  alert("Purchase Saved Successfully");
-                }}
-              >
+              <Button className="bg-green-600 hover:bg-green-700">
 
-                <Save className="mr-2 h-4 w-4" />
+                <Save className="mr-2 h-4 w-4"/>
 
                 Save Purchase
 
@@ -655,7 +798,7 @@ export default function PurchasePage() {
                 onClick={() => window.print()}
               >
 
-                <Printer className="mr-2 h-4 w-4" />
+                <Printer className="mr-2 h-4 w-4"/>
 
                 Print Purchase
 
@@ -663,12 +806,12 @@ export default function PurchasePage() {
 
               <Button
                 variant="outline"
-                onClick={() => {
-                  alert("PDF Download Coming Soon");
-                }}
+                onClick={() =>
+                  alert("PDF Export Coming Soon")
+                }
               >
 
-                <Download className="mr-2 h-4 w-4" />
+                <Download className="mr-2 h-4 w-4"/>
 
                 Download PDF
 
@@ -683,5 +826,7 @@ export default function PurchasePage() {
       </div>
 
     </div>
+
   );
+
 }
